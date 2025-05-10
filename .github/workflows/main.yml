@@ -24,8 +24,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13, macos-15, ubuntu-24.04, ubuntu-24.04-arm, windows-2025]
-        # os: [macos-latest, ubuntu-latest]
+        # os: [macos-13, macos-15, ubuntu-24.04, ubuntu-24.04-arm, windows-2025]
+        os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
