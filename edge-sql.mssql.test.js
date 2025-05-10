@@ -1,7 +1,6 @@
 const edge = require('edge-js');
 const assert = require('assert');
 
-
 function sql(func, params){
     return new Promise((resolve, reject) =>{
         func(params, function (error, result) {
