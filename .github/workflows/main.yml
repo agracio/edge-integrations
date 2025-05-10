@@ -67,17 +67,17 @@ jobs:
       - name: npm install
         run: npm i
 
-      - name: "Run .NET|Mono tests"
-        if: runner.os != 'Linux'  
-        run: npm test
-        env:
-          EDGE_SQL_CONNECTION_STRING: ${{ secrets.MSSQL }}
-
       - name: "Run CoreClr tests"
         run: npm test
         env:
           EDGE_SQL_CONNECTION_STRING: ${{ secrets.MSSQL }}
           EDGE_USE_CORECLR: 1
+
+      - name: "Run .NET|Mono tests"
+        if: runner.os != 'Linux'  
+        run: npm test
+        env:
+          EDGE_SQL_CONNECTION_STRING: ${{ secrets.MSSQL }}
 
       - name: publish test-summary nacOS
         if: runner.os == 'macOS'
