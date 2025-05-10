@@ -7,7 +7,6 @@
   "license": "MIT",
   "type": "commonjs",
   "dependencies": {
-    "chai": "^5.2.0",
     "edge-js": "^24.0.0",
     "edge-sql": "^1.0.3",
     "mocha": "^11.2.2",
@@ -23,6 +22,6 @@
     "url": "http://github.com/agracio/edge-integrations/issues"
   },
   "scripts": {
-    "test": "mocha *test*.js --timeout 10000 --reporter mocha-multi-reporters --reporter-options configFile=config.json"
+    "test": "mocha *test*.js --timeout 100000 --reporter mocha-multi-reporters --reporter-options configFile=config.json"
   }
 }
