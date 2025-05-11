@@ -5,7 +5,7 @@ function sql(func, params){
     return new Promise((resolve, reject) =>{
         func(params, function (error, result) {
             if(error) {
-                console.error(error);
+                // console.error(error);
                 reject(error);
             }
             else {
