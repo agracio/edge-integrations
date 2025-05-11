@@ -8,7 +8,7 @@
   "type": "commonjs",
   "dependencies": {
     "edge-js": "^24.0.0",
-    "edge-sql": "file:edge-sql-1.0.4.tgz",
+    "edge-sql": "^1.0.4",
     "mocha": "^11.2.2",
     "mocha-junit-reporter": "^2.2.1",
     "mocha-multi-reporters": "^1.5.1"

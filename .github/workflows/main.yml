@@ -25,8 +25,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # os: [macos-13, macos-15, ubuntu-24.04, ubuntu-24.04-arm, windows-2025]
         os: [macos-latest, ubuntu-latest, windows-latest]
-        # os: [macos-latest, ubuntu-latest]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -51,11 +51,30 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x' 
-    
+
+      - name: Setup Mono
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          brew install mono --overwrite
+          brew reinstall pkg-config
+  
+      # - name: Setup Mono
+      #   if: runner.os == 'Linux'
+      #   shell: bash
+      #   run: |
+      #     sudo apt -q install mono-complete pkg-config libglib2.0-dev
+        
       - name: npm install
         run: npm i
 
-      - name: "Run tests"
+      - name: "Run .NET|Mono tests"
+        if: runner.os != 'Linux'
+        run: npm test
+        env:
+          EDGE_SQL_CONNECTION_STRING: ${{ secrets.MSSQL }}
+
+      - name: "Run CoreClr tests"
         run: npm test
         env:
           EDGE_SQL_CONNECTION_STRING: ${{ secrets.MSSQL }}
