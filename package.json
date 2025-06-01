@@ -7,9 +7,9 @@
   "license": "MIT",
   "type": "commonjs",
   "dependencies": {
-    "edge-js": "^24.0.1",
-    "edge-sql": "^1.0.5",
-    "mocha": "^11.2.2",
+    "edge-js": "^24.0.4",
+    "edge-sql": "^1.0.6",
+    "mocha": "^11.5.0",
     "mocha-junit-reporter": "^2.2.1",
     "mocha-multi-reporters": "^1.5.1"
   },
@@ -22,6 +22,6 @@
     "url": "http://github.com/agracio/edge-integrations/issues"
   },
   "scripts": {
-    "test": "mocha *test*.js --timeout 100000 --reporter mocha-multi-reporters --reporter-options configFile=config.json"
+    "test": "mocha edge-sql.*.test.js --timeout 100000 --reporter mocha-multi-reporters --reporter-options configFile=config.json"
   }
 }

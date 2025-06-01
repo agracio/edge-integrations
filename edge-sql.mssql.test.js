@@ -1,120 +1,45 @@
-const edge = require('edge-js');
-const assert = require('assert');
+'use strict';
+const test = require('./edge-sql.test');
 
-function sql(func, params){
-    return new Promise((resolve, reject) =>{
-        func(params, function (error, result) {
-            if(error) {
-                // console.error(error);
-                reject(error);
-            }
-            else {
-                resolve(result);
-            }
-        });
-    });
-}
+describe("edge-sql MS SQL", () => {
 
-function random(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-describe("edge-sql MS-SQL", () => {
-
-
-    it('select top', async() => {
-
-        let func = edge.func('sql', function () {/*
-            select top 2 * from Authors
-        */});
-
-        let result = await sql(func, null);
-        assert.equal(JSON.stringify(result), '[{\"Id\":1,\"Name\":\"Author - 1\",\"Country\":\"Country - 1\"},{\"Id\":2,\"Name\":\"Author - 2\",\"Country\":\"Country - 2\"}]');
+    it('select top 2', async() => {
+        await test.top('mssql', process.env.MSSQL, 'SELECT TOP 2 * FROM Authors');
     });
 
-    it('select id', async() => {
 
-        let func = edge.func('sql', function () {/*
-            select * from Authors 
-            where Id = @authorId
-        */});
-
-        let result = await sql(func, { authorId: 1 });
-        assert.equal(JSON.stringify(result), '[{\"Id\":1,\"Name\":\"Author - 1\",\"Country\":\"Country - 1\"}]');
-    });
-
-    it('select id with options', async() => {
-
-        let func = edge.func('sql', {
-            source: 'select * from Authors where Id = @authorId',
-            commandTimeout: 100
-        });
-
-        let result = await sql(func, { authorId: 1 });
-        assert.equal(JSON.stringify(result), '[{\"Id\":1,\"Name\":\"Author - 1\",\"Country\":\"Country - 1\"}]');
+    it('select by id', async() => {
+        await test.id('mssql', process.env.MSSQL);
     });
 
     it('select from multiple tables', async() => {
-
-        let func = edge.func('sql', {
-            source: 'select top 1 * from Authors; select top 1 * from Books',
-            commandTimeout: 100
-        });
-
-        let result = await sql(func, null);
-        assert.equal(JSON.stringify(result), '{\"Authors\":[{\"Id\":1,\"Name\":\"Author - 1\",\"Country\":\"Country - 1\"}],\"Books\":[{\"Id\":1,\"Author_id\":485,\"Price\":64,\"Edition\":9}]}');
+        await test.multiple('mssql', process.env.MSSQL, 'SELECT top 1 * FROM Authors; SELECT top 1 * FROM Books');
+    });
+    
+    it('select geometry', async function () {
+        if(!process.env.EDGE_USE_CORECLR) {
+            this.skip()
+        }
+        await test.geometryMsSql('mssql', process.env.MSSQL, 'select top 2 * from SpatialTable');
     });
 
-    it('update', async() => {
+    it.skip('insert geometry', async() => {
+        await test.insertGeometry('mssql', process.env.MSSQL, 'INSERT INTO SpatialTable (GeomCol) VALUES (geometry::STGeomFromText(\'LINESTRING (100 100, 20 180, 180 180)\', 0))', null);
+    });
 
-        const rnd = random(3, 500);
-        let name = 'Author - ' + rnd;
+    it('update geometry', async() => {
+        await test.updateGeometry('mssql', process.env.MSSQL, 'UPDATE SpatialTable set GeomCol = @newValue where id = @id', { id: 4, newValue: 'POINT(10 10)' });
+    });
 
-        let func = edge.func('sql', {
-            source: 'select Name from Authors where Id = @authorId',
-            commandTimeout: 100
-        });
-
-        let result = await sql(func, { authorId: rnd});
-        assert.equal(result[0].Name, name);
-
-        let update = edge.func('sql', {
-            source: 'update Authors set Name = @name where Id = @authorId',
-            commandTimeout: 100
-        });
-
-        let newName = name + ' - updated';
-
-        await sql(update, { authorId: rnd, name: newName});
-
-        result = await sql(func, { authorId: rnd});
-        assert.equal(result[0].Name, newName);
-
-        await sql(update, { authorId: rnd, name: name});
-
-        result = await sql(func, { authorId: rnd});
-        assert.equal(result[0].Name, name);
+    it.skip('update', async() => {
+        await test.update('mssql', process.env.MSSQL);
     });
 
     it('stored proc', async() => {
-
-        let func = edge.func('sql', {
-            source: 'exec GetBooksByAuthor',
-            commandTimeout: 100
-        });
-
-        let result = await sql(func, { AuthorId: 2});
-        assert.equal(JSON.stringify(result), '[{\"Id\":182,\"Author_id\":2,\"Price\":55,\"Edition\":10},{\"Id\":279,\"Author_id\":2,\"Price\":88,\"Edition\":9}]');
+        await test.proc('mssql', process.env.MSSQL);
     });
 
     it('stored proc with output parameters', async() => {
-
-        let func = edge.func('sql', {
-            source: 'exec GetAuthorDetails',
-            commandTimeout: 100
-        });
-
-        let result = await sql(func, { AuthorID: 1, '@returnParam1': 'Name', '@returnParam2': 'Country' });
-        assert.equal(JSON.stringify(result), '{\"Name\":\"Author - 1\",\"Country\":\"Country - 1\"}');
+        await test.procOut('mssql', process.env.MSSQL);
     });
 });

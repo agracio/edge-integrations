@@ -72,14 +72,16 @@ jobs:
         if: runner.os != 'Linux'
         run: npm test
         env:
-          EDGE_SQL_CONNECTION_STRING: ${{ secrets.MSSQL }}
+          MSSQL: ${{ secrets.MSSQL }}
           MYSQL: ${{ secrets.MYSQL }}
+          PGSQL: ${{ secrets.PGSQL }}
 
       - name: "Run CoreClr tests"
         run: npm test
         env:
-          EDGE_SQL_CONNECTION_STRING: ${{ secrets.MSSQL }}
+          MSSQL: ${{ secrets.MSSQL }}
           MYSQL: ${{ secrets.MYSQL }}
+          PGSQL: ${{ secrets.PGSQL }}
           EDGE_USE_CORECLR: 1
 
       - name: publish test-summary nacOS
